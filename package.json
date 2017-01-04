@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "author": "jiaochanglong",
+  "version": "1.0.0",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "child_process": "^1.0.2",
+    "exceljs": "^0.2.37",
+    "express": "~4.8.8",
+    "iconv-lite": "^0.4.15",
+    "node-xlsx": "^0.7.4",
+    "require": "^2.4.20"
+  }
+}
