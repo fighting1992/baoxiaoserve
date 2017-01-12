@@ -13,14 +13,6 @@ var Excel = require('exceljs');
 app.use("/", express.static(__dirname));
 // 创建服务端
 
-
-
-
-
-
-
-
-
 var workbook = new Excel.Workbook();
 workbook.xlsx.readFile('./a.xlsx')
 .then(function(data) {
@@ -74,26 +66,29 @@ app.post('/download',function(request,response){
         fs.writeFileSync('user11.xlsx', file, 'binary');
     }
 
-
-
-
-
-
-
-
-
     // createXlsx();
 });
+//下载表格
 app.get('/download',function(request,response){
     response.download('./'+request.query.timeName+'.xlsx')
         app.delete('./'+request.query.timeName+'.xlsx');
         child = exec('rm -rf ./'+request.query.timeName+'.xlsx',function(err,out) { 
         });
     
-})
+});
+
+app.post('/changetime',function(request,response){
+
+    response.set("Access-Control-Allow-Origin", "*");
+    response.set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+    response.set("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+
+    getDateJson(request,response);
+
+});
 
 app.listen('7000',function(){
-    console.log('app is start!');
+    console.log('app is start!port is 7000!');
 })
     // 表格
 function a (req, res) {
@@ -151,28 +146,26 @@ function a (req, res) {
         
     };
 
+function getDateJson (request,response) {
+    var url = 'https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php?query='+ request.body.reqData + '&co=&resource_id=6018&t=1480061849715&ie=utf8&oe=gbk&cb=op_aladdin_callback&format=json&tn=baidu&cb=&_=1479871811296'
+    https.get(url , function(res){
 
+        // res.setEncoding('GBK');    //正常可转码为utf8 不支持gbk
+        var arrBuf = [];
+        var bufLength = 0;
 
-
-    function getDateJson (request,response) {
-        https.get('https://sp0.baidu.com/8aQDcjqpAAV3otqbppnN2DJv/api.php?query=2016%E5%B9%B410%E6%9C%88&co=&resource_id=6018&t=1480061849715&ie=utf8&oe=gbk&cb=op_aladdin_callback&format=json&tn=baidu&cb=&_=1479871811296' , function(res){
-
-            // res.setEncoding('GBK');    //正常可转码为utf8 不支持gbk
-            var arrBuf = [];
-            var bufLength = 0;
-
-            res.on('data',function(d){
-                arrBuf.push(d);
-                bufLength += d.length;
-            })
-            .on('end',function(){
-                // Buffer.concat(数组, 数组长度);
-               var chunkAll = Buffer.concat(arrBuf, bufLength);   
-               var strJson = iconv.decode(chunkAll,'gbk');
-               // 返回json格式
-               response.send(strJson);
-            });
-        }).on('error', function(e) {
-            console.log("Got error: " + e.message);
+        res.on('data',function(d){
+            arrBuf.push(d);
+            bufLength += d.length;
+        })
+        .on('end',function(){
+            // Buffer.concat(数组, 数组长度);
+           var chunkAll = Buffer.concat(arrBuf, bufLength);   
+           var strJson = iconv.decode(chunkAll,'gbk');
+           // 返回json格式
+           response.send(strJson);
         });
-    }
+    }).on('error', function(e) {
+        console.log("Got error: " + e.message);
+    });
+}
